@@ -10,12 +10,12 @@ namespace SuperCipher
     {
         //max size: 4GB
         private UInt32 a;
-        private UInt32 b;
+        private UInt32 b; //b > a
 
-        public void start()
+        public void start(UInt32 a = 0, UInt32 b = 1)
         {
-            a = 0;
-            b = 1;
+            this.a = a;
+            this.b = b;
         }
 
         //value starts from 1
@@ -25,6 +25,14 @@ namespace SuperCipher
             a = b;
             b = temp + b;
             return a;
+        }
+
+        public UInt32 prev()
+        {
+            UInt32 temp = b;
+            b = a;
+            a = temp - a;
+            return b;
         }
     }
 }
