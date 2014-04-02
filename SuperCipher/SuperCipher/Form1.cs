@@ -15,6 +15,7 @@ namespace SuperCipher
         public Form1()
         {
             InitializeComponent();
+            textBox3.ReadOnly = true;
         }
 
         private void radioButton2_CheckedChanged(object sender, EventArgs e)

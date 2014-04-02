@@ -8,6 +8,11 @@ namespace SuperCipher
 {
     class Enkripsi
     {
+        public byte[] encrypt(byte[] key, byte[] iv)
+        {
+            return null;
+        }
+
         public byte[] transpose(byte[] b)
         {
             UInt32 length = (UInt32)b.Length;
