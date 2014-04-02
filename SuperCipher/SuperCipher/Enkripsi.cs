@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SuperCipher
 {
-    class Enkripsi
+    public class Enkripsi
     {
         byte[][] internalKey; //digunakan pada generateInternalKey, addRoundKey
 
