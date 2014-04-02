@@ -8,9 +8,38 @@ namespace SuperCipher
 {
     class Enkripsi
     {
+        byte[][] internalKey; //digunakan pada generateInternalKey, addRoundKey
+
         public byte[] encrypt(byte[] key, byte[] iv)
         {
             return null;
+        }
+
+        public byte[][] generateAllInternalKey(string key) //men-generate seluruh (10) internal key dengan pseudo random
+        {
+            byte[] byteKey = Encoding.ASCII.GetBytes(key);
+            Random rnd = new Random();
+            for (int i = 0; i < 10; i++)
+            {
+                for (int j = 0; j < key.Length; j++)
+                {
+                    if (i == 0)
+                        internalKey[i][j] = (byte)rnd.Next((int)byteKey[j]);
+                    else
+                        internalKey[i][j] = (byte)rnd.Next((int)internalKey[i-1][j]);
+                }
+            }
+            return internalKey;
+        }
+
+        public byte[] generateNewVector(byte[] input) //men-generate satu vector terutama IV secara pseudo random --versi sementara, ada kemungkinan di non-random-kan
+        {
+            Random rnd = new Random();
+            for (int i = 0; i < input.Length; i++)
+            {
+                input[i] = (byte)(rnd.Next(input[0]));
+            }
+            return input;
         }
 
         public byte[] transpose(byte[] b)
@@ -46,6 +75,16 @@ namespace SuperCipher
                 i = j; j = fib.next();
             }
 
+            return b;
+        }
+
+        public byte[] addRoundKey(byte[] b) //mengenkripsi b (hasil feistel) dengan menggunakan suatu vector dan internal key --versi sementara, kurang rumit
+        {
+            byte[] roundKey = generateNewVector(b);
+            for (int i = 0; i < b.Length; i++)
+            {
+                b[i] = (byte)(b[i] ^ roundKey[i] ^ internalKey[2][i]);
+            }
             return b;
         }
     }
