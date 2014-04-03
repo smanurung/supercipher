@@ -10,36 +10,52 @@ namespace SuperCipher
     {
         byte[][] internalKey; //digunakan pada generateInternalKey, addRoundKey
 
-        public byte[] encrypt(byte[] key, byte[] iv)
-        {
-            return null;
-        }
-
-        public byte[][] generateAllInternalKey(string key) //men-generate seluruh (10) internal key dengan pseudo random
+        public void generateAllInternalKey(string key) //men-generate seluruh (10) internal key dengan pseudo random
         {
             byte[] byteKey = Encoding.ASCII.GetBytes(key);
-            Random rnd = new Random();
+            byte[] firstHalfInternalKey = new byte[key.Length / 2];
+            byte[] secondHalfInternalKey = new byte[key.Length / 2];
+            //menjumlahkan seluruh elemen key untuk menjadi integer seed
+            int sumKey = 0;
+            for (int i = 0; i < key.Length; i++)
+                sumKey += (int)key[i];
+
+            //generate seluruh (i = 10) internal key
+            Random rnd = new Random(sumKey);
             for (int i = 0; i < 10; i++)
             {
-                for (int j = 0; j < key.Length; j++)
+                for (int j = 0; j < key.Length / 2; j++)
                 {
-                    if (i == 0)
-                        internalKey[i][j] = (byte)rnd.Next((int)byteKey[j]);
-                    else
-                        internalKey[i][j] = (byte)rnd.Next((int)internalKey[i-1][j]);
+                    firstHalfInternalKey[j] = (byte)rnd.Next(255); //random max value = 128 (half ASCII)
+                    secondHalfInternalKey[j] = (byte)rnd.Next(255);
+                    secondHalfInternalKey[j] = (byte)rnd.Next(255);
+                    internalKey[i][j] = (byte)(firstHalfInternalKey[j] ^ secondHalfInternalKey[j]);
                 }
             }
-            return internalKey;
         }
 
         public byte[] generateNewVector(byte[] input) //men-generate satu vector terutama IV secara pseudo random --versi sementara, ada kemungkinan di non-random-kan
         {
-            Random rnd = new Random();
+            int sumInput = 0;
+            for (int i = 0; i < input.Length; i++)
+                sumInput += (int)input[i];
+
+            Random rnd = new Random(sumInput);
             for (int i = 0; i < input.Length; i++)
             {
-                input[i] = (byte)(rnd.Next(input[0]));
+                input[i] = (byte)(rnd.Next(255)); //random max value = 128 (half ASCII)
             }
             return input;
+        }
+
+        public byte[] addRoundKey(byte[] b) //mengenkripsi b (hasil feistel) dengan menggunakan suatu vector dan internal key --versi sementara, kurang rumit
+        {
+            byte[] roundKey = generateNewVector(b);
+            for (int i = 0; i < b.Length; i++)
+            {
+                b[i] = (byte)((b[i] ^ roundKey[i]) ^ internalKey[i % 10][i]);
+            }
+            return b;
         }
 
         public byte[] transpose(byte[] b)
@@ -78,14 +94,14 @@ namespace SuperCipher
             return b;
         }
 
-        public byte[] addRoundKey(byte[] b) //mengenkripsi b (hasil feistel) dengan menggunakan suatu vector dan internal key --versi sementara, kurang rumit
+        internal byte[] encrypt(byte[] p, byte[] register)
         {
-            byte[] roundKey = generateNewVector(b);
-            for (int i = 0; i < b.Length; i++)
-            {
-                b[i] = (byte)(b[i] ^ roundKey[i] ^ internalKey[2][i]);
-            }
-            return b;
+            throw new NotImplementedException();
+        }
+
+        internal byte[] encrypt(string p1, byte[] p2)
+        {
+            throw new NotImplementedException();
         }
     }
 }
