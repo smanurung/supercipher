@@ -10,6 +10,13 @@ namespace SuperCipher
     {
         byte[][] internalKey; //digunakan pada generateInternalKey, addRoundKey
 
+
+
+        public void setHeader(String iv, String filename, String ext, int totalPading)
+        {
+
+        }
+
         public void generateAllInternalKey(string key) //men-generate seluruh (10) internal key dengan pseudo random
         {
             byte[] byteKey = Encoding.ASCII.GetBytes(key);
@@ -26,7 +33,7 @@ namespace SuperCipher
             {
                 for (int j = 0; j < key.Length / 2; j++)
                 {
-                    firstHalfInternalKey[j] = (byte)rnd.Next(255); //random max value = 128 (half ASCII)
+                    firstHalfInternalKey[j] = (byte)rnd.Next(255); //random max value = 255 (ASCII)
                     secondHalfInternalKey[j] = (byte)rnd.Next(255);
                     secondHalfInternalKey[j] = (byte)rnd.Next(255);
                     internalKey[i][j] = (byte)(firstHalfInternalKey[j] ^ secondHalfInternalKey[j]);
@@ -43,7 +50,7 @@ namespace SuperCipher
             Random rnd = new Random(sumInput);
             for (int i = 0; i < input.Length; i++)
             {
-                input[i] = (byte)(rnd.Next(255)); //random max value = 128 (half ASCII)
+                input[i] = (byte)(rnd.Next(255)); //random max value = 255 (ASCII)
             }
             return input;
         }

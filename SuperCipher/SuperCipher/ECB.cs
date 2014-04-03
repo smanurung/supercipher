@@ -8,8 +8,6 @@ namespace SuperCipher
 {
     class ECB
     {
-        private String filename;
-        private String extension;
         private String plain;
         private String cipher;
         private String key;

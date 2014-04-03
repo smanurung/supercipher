@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.IO;
 
 namespace SuperCipher
 {
@@ -69,7 +70,6 @@ namespace SuperCipher
             if(openFileDialog1.ShowDialog() == DialogResult.OK)
             {
                 MessageBox.Show("File: "+openFileDialog1.FileName, "Confirm", MessageBoxButtons.YesNo);
-
                 //show on the editor for textual extension files
             }
         }
@@ -81,6 +81,12 @@ namespace SuperCipher
 
         private void button2_Click(object sender, EventArgs e)
         {
+            //menyimpan hasil paling akhir
+            String result;
+
+            //menyimpan hasil tiap mode
+            byte[] modeResult = null;
+
             //check input file
             if (openFileDialog1.FileName.Equals("openFileDialog1"))
             {
@@ -106,7 +112,8 @@ namespace SuperCipher
             }
 
             //read file content (plaintext)
-            byte[] plain = System.IO.File.ReadAllBytes(openFileDialog1.FileName);
+            String dialogfilename = openFileDialog1.FileName;
+            byte[] plain = System.IO.File.ReadAllBytes(dialogfilename);
 
             //check used mode
             if (radioButton1.Checked)
@@ -123,17 +130,18 @@ namespace SuperCipher
             {
                 //CFB mode
                 CFB cfb = new CFB(plain, null ,keyBox.Text,ivBox.Text);
-                byte[] resb = cfb.encrypt();
+                modeResult = cfb.encrypt();
             }
             else if (radioButton4.Checked)
             {
                 //OFB mode
             }
+            //convert byte to hex
+            result = ByteArrayToString(modeResult);
 
             //set header
-
-            //convert byte to hex
-            textBox3.Text = ByteArrayToString(plain);
+            result += "." + ivBox.Text + "." + dialogfilename + "." + Path.GetExtension(filename) + "." + (plain.Length - keyBox.Text.Length).ToString();
+            textBox3.Text = result;
         }
 
         private String ByteArrayToString(byte[] b)
@@ -172,10 +180,23 @@ namespace SuperCipher
                 return;
             }
 
+            //read file content (cipher)
+            String dialogfilename = openFileDialog1.FileName;
+            String cipher = System.IO.File.ReadAllText(dialogfilename);
+
             //no need for iv
 
             //get header
+            byte[] iv;
+            int padding;
+            String[] header = cipher.Split('.');
+            if (header.Length != 5)
+                MessageBox.Show("Bukan file yang dapat didekripsi", "Peringatan", MessageBoxButtons.OK);
+                
+            else 
+            {
 
+            }
             //decrypt
 
             //show to editor
