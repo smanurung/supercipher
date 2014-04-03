@@ -44,6 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CBC.cs" />
     <Compile Include="CFB.cs" />
     <Compile Include="Dekripsi.cs" />
     <Compile Include="Enkripsi.cs" />
