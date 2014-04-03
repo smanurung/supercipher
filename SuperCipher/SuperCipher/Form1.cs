@@ -93,6 +93,7 @@ namespace SuperCipher
 
             //menyimpan hasil tiap mode
             byte[] modeResult = null;
+            String mode = "";
 
             //check input file
             if (openFileDialog1.FileName.Equals("openFileDialog1"))
@@ -124,30 +125,34 @@ namespace SuperCipher
 
             //check used mode
             if (radioButton1.Checked)
-            {
+            
                 //ECB mode
+                mode = "ECB";
             }
             else if (radioButton2.Checked)
             {
                 //generate IV
 
                 //CBC mode
+                mode = "CBC";
             }
             else if (radioButton3.Checked)
             {
                 //CFB mode
+                mode = "CFB";
                 CFB cfb = new CFB(plain, null ,keyBox.Text,ivBox.Text);
                 modeResult = cfb.encrypt();
             }
             else if (radioButton4.Checked)
             {
                 //OFB mode
+                mode = "OFB";
             }
             //convert byte to hex
             result = ByteArrayToString(modeResult);
 
             //set header
-            result += "." + ivBox.Text + "." + Path.GetFileNameWithoutExtension(filename) + "." + Path.GetExtension(filename) + "." + (keyBox.Text.Length- (plain.Length % keyBox.Text.Length)).ToString();
+            result += "." + ivBox.Text + "." + Path.GetFileNameWithoutExtension(filename) + "." + Path.GetExtension(filename) + "." + mode + "." + (keyBox.Text.Length- (plain.Length % keyBox.Text.Length)).ToString();
             textBox3.Text = result;
         }
 
@@ -157,6 +162,8 @@ namespace SuperCipher
             byte[] iv;
             int padding;
             byte[] content;
+            String mode = "";
+    
 
             //validate input file
             if (openFileDialog1.FileName.Equals("openFileDialog1"))
@@ -187,7 +194,8 @@ namespace SuperCipher
             {
                 filename = header[2];
                 iv = Encoding.ASCII.GetBytes(header[1]);
-                padding = Int32.Parse(header[1]);
+                mode = header[4];
+                padding = Int32.Parse(header[5]);
                 content = StringToByteArray(header[0]);
                 extension = header[3];
             }
