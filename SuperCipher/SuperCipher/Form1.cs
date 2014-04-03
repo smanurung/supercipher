@@ -14,6 +14,7 @@ namespace SuperCipher
     public partial class Form1 : Form
     {
         private String filename;
+        private String extension;
 
         public Form1()
         {
@@ -146,31 +147,17 @@ namespace SuperCipher
             result = ByteArrayToString(modeResult);
 
             //set header
-            result += "." + ivBox.Text + "." + dialogfilename + "." + Path.GetExtension(filename) + "." + (plain.Length - keyBox.Text.Length).ToString();
+            result += "." + ivBox.Text + "." + Path.GetFileNameWithoutExtension(filename) + "." + Path.GetExtension(filename) + "." + (keyBox.Text.Length- (plain.Length % keyBox.Text.Length)).ToString();
             textBox3.Text = result;
-        }
-
-        private String ByteArrayToString(byte[] b)
-        {
-            StringBuilder hex = new StringBuilder(b.Length * 2);
-            foreach(byte a in b)
-            {
-                hex.AppendFormat("{0:x2}",a);
-            }
-            return hex.ToString();
-        }
-
-        private byte[] StringToByteArray(String hex)
-        {
-            int NumberChars = hex.Length;
-            byte[] bytes = new byte[NumberChars / 2];
-            for (int i = 0; i < NumberChars; i += 2)
-                bytes[i / 2] = Convert.ToByte(hex.Substring(i, 2), 16);
-            return bytes;
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
+            //header variable
+            byte[] iv;
+            int padding;
+            byte[] content;
+
             //validate input file
             if (openFileDialog1.FileName.Equals("openFileDialog1"))
             {
@@ -193,19 +180,43 @@ namespace SuperCipher
             //no need for iv
 
             //get header
-            byte[] iv;
-            int padding;
             String[] header = cipher.Split('.');
             if (header.Length != 5)
                 MessageBox.Show("Bukan file yang dapat didekripsi", "Peringatan", MessageBoxButtons.OK);
-                
             else 
             {
-
+                filename = header[2];
+                iv = Encoding.ASCII.GetBytes(header[1]);
+                padding = Int32.Parse(header[1]);
+                content = StringToByteArray(header[0]);
+                extension = header[3];
             }
+            
+            //convert hex to byte[]
+            content = 
+
             //decrypt
 
             //show to editor
+        }
+
+        private String ByteArrayToString(byte[] b)
+        {
+            StringBuilder hex = new StringBuilder(b.Length * 2);
+            foreach (byte a in b)
+            {
+                hex.AppendFormat("{0:x2}", a);
+            }
+            return hex.ToString();
+        }
+
+        private byte[] StringToByteArray(String hex)
+        {
+            int NumberChars = hex.Length;
+            byte[] bytes = new byte[NumberChars / 2];
+            for (int i = 0; i < NumberChars; i += 2)
+                bytes[i / 2] = Convert.ToByte(hex.Substring(i, 2), 16);
+            return bytes;
         }
     }
 }
