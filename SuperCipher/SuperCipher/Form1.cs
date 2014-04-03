@@ -20,7 +20,7 @@ namespace SuperCipher
         {
             InitializeComponent();
             textBox3.ReadOnly = true;
-            this.filepath = "default";
+            this.filepath = "default.txt";
         }
 
         private void radioButton2_CheckedChanged(object sender, EventArgs e)
@@ -160,11 +160,11 @@ namespace SuperCipher
         private void button3_Click(object sender, EventArgs e)
         {
             //header variable
-            byte[] iv;
+            byte[] iv = new byte[1];
             int padding;
-            byte[] content;
+            byte[] content = new byte[1];
             String mode = "";
-    
+
 
             //validate input file
             if (openFileDialog1.FileName.Equals("openFileDialog1"))
@@ -189,16 +189,32 @@ namespace SuperCipher
 
             //get header
             String[] header = cipher.Split('.');
-            if (header.Length != 5)
-                MessageBox.Show("Bukan file yang dapat didekripsi", "Peringatan", MessageBoxButtons.OK);
-            else 
+            foreach(String s in header)
             {
-                filepath = header[2];
+                Console.WriteLine(s);
+            }
+            String filename = "";
+            if (header.Length != 6)
+                MessageBox.Show("Bukan file yang dapat didekripsi", "Peringatan", MessageBoxButtons.OK);
+            else
+            {
+                filename = header[2];
                 iv = Encoding.ASCII.GetBytes(header[1]);
+                Console.WriteLine("iv: {0}",iv[0]);
                 mode = header[4];
                 padding = Int32.Parse(header[5]);
                 content = StringToByteArray(header[0]);
+                Console.WriteLine(content[0]);
                 extension = header[3];
+            }
+
+            if (mode.Equals("CFB"))
+            {
+                CFB cfb = new CFB(null, content, keyBox.Text, Encoding.ASCII.GetString(iv));
+                Console.WriteLine(Encoding.ASCII.GetString(iv));
+                byte[] pbytes = cfb.decrypt();
+                Console.WriteLine("hasil dekripsi: {0}", ByteArrayToString(pbytes));
+                textBox3.Text = ByteArrayToString(pbytes);
             }
         }
 
