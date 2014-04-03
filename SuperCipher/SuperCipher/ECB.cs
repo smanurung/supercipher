@@ -8,12 +8,12 @@ namespace SuperCipher
 {
     class ECB
     {
-        private String plain;
-        private String cipher;
+        private byte[] plain;
+        private byte[] cipher;
         private String key;
         private String iv;
 
-        public ECB(String _plain, String _key, String _cipher, String _iv)
+        public ECB(byte[] _plain, byte[] _cipher, String _key, String _iv)
         {
             this.plain = _plain;
             this.cipher = _cipher;
@@ -21,33 +21,39 @@ namespace SuperCipher
             this.iv = _iv;
         }
 
-        public String encrypt()
+        public byte[] encrypt()
         {
             Enkripsi enkripsi = new Enkripsi();
             int leftover = plain.Length % key.Length;
             int blockTotal = plain.Length / key.Length;
             for (int i = 0; i < blockTotal; i++)
             {
-                this.cipher += Encoding.ASCII.GetString(enkripsi.encrypt(this.plain.Substring(i,key.Length), Encoding.ASCII.GetBytes(key)));
+                byte[] blockPlain = new byte [key.Length];
+                Array.Copy(plain, key.Length * i, blockPlain, 0, key.Length);
+                this.cipher = enkripsi.encrypt(blockPlain, Encoding.ASCII.GetBytes(key));
             }
             if (leftover > 0)
             {
-                String tmp = this.plain;
-                String paddingChar = "z";
+                byte[] tmp = new byte[this.plain.Length + key.Length - leftover];
+                byte paddingByte = 0;
                 for (int i = 0; i < key.Length - leftover; i++)
-                    tmp += paddingChar;
-                this.cipher += Encoding.ASCII.GetString(enkripsi.encrypt(this.plain.Substring(tmp.Length - key.Length - 1, key.Length), Encoding.ASCII.GetBytes(key)));
+                    tmp[blockTotal * key.Length + i] = paddingByte;
+                byte[] blockPlain = new byte[key.Length];
+                Array.Copy(tmp, key.Length * blockTotal, blockPlain, 0, key.Length);
+                this.cipher = enkripsi.encrypt(blockPlain, Encoding.ASCII.GetBytes(key));
             }
             return this.cipher;
         }
 
-        public String decrypt()
+        public byte[] decrypt()
         {
             Dekripsi dekripsi = new Dekripsi();
             int blockTotal = plain.Length / key.Length;
             for (int i = 0; i < blockTotal; i++)
             {
-                this.plain += Encoding.ASCII.GetString(dekripsi.decrypt(this.cipher.Substring(i, key.Length), Encoding.ASCII.GetBytes(key)));
+                byte[] blockCipher = new byte[key.Length];
+                Array.Copy(cipher, key.Length * i, blockCipher, 0, key.Length);
+                this.plain = dekripsi.decrypt(blockCipher, Encoding.ASCII.GetBytes(key)));
             }
             return this.plain;
         }

@@ -3,19 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
+using System.Security.Cryptography;
 
 namespace SuperCipher
 {
     public class Enkripsi
     {
-        byte[][] internalKey; //digunakan pada generateInternalKey, addRoundKey
-
-
-
-        public void setHeader(String iv, String filename, String ext, int totalPading)
-        {
-
-        }
+        private byte[][] internalKey; //digunakan pada generateInternalKey, addRoundKey
 
         public void generateAllInternalKey(string key) //men-generate seluruh (10) internal key dengan pseudo random
         {
@@ -64,6 +59,24 @@ namespace SuperCipher
             }
             return b;
         }
+        //tabel lookup substitusi
+        private static readonly byte[] TABLE = new byte[] { 0x26, 0xdc, 0xff, 0x00, 0xad, 0xed, 0x7a, 0xee, 0xc5, 0xfe, 0x07, 0xaf, 0x4d, 0x08, 0x22, 0x3c };
+        public static byte[] Substitusi(byte[] b, string key)
+        {
+            MemoryStream memoryStream;
+            CryptoStream cryptoStream;
+            //generate rijndael
+            Rijndael rijndael = Rijndael.Create();
+            //menggunakan class Rfc2898DeriveBytes untuk generate IV dan Key sementara untuk substitusi
+            Rfc2898DeriveBytes pdb = new Rfc2898DeriveBytes(key, TABLE);
+            rijndael.Key = pdb.GetBytes(32);
+            rijndael.IV = pdb.GetBytes(16);
+            memoryStream = new MemoryStream();
+            cryptoStream = new CryptoStream(memoryStream, rijndael.CreateEncryptor(), CryptoStreamMode.Write);
+            cryptoStream.Write(b, 0, b.Length);
+            cryptoStream.Close();
+            return memoryStream.ToArray();
+        }
 
         public byte[] transpose(byte[] b)
         {
@@ -101,14 +114,20 @@ namespace SuperCipher
             return b;
         }
 
-        internal byte[] encrypt(byte[] p, byte[] register)
+        internal byte[] encrypt(byte[] blokPlain, byte[] key)
         {
-            throw new NotImplementedException();
-        }
+            byte[] result = blokPlain;
+            result = addRoundKey(blokPlain);
+            for (int i = 0; i < 8; i++)
+            {
+                result = transpose(result);
+                result = addRoundKey(result);
+            }
+            
+            result = transpose(result);
+            result = transpose(result);
 
-        internal byte[] encrypt(string p1, byte[] p2)
-        {
-            throw new NotImplementedException();
+            return result;
         }
     }
 }
