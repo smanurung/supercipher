@@ -160,11 +160,16 @@ namespace SuperCipher
         private void button3_Click(object sender, EventArgs e)
         {
             //header variable
-            byte[] iv;
+            String iv;
             int padding;
             byte[] content;
             String mode = "";
-    
+
+            //instead of keyBox.Text use this
+            String newKey = "";
+
+            //result for each mode
+            byte[] modeResult;
 
             //validate input file
             if (openFileDialog1.FileName.Equals("openFileDialog1"))
@@ -190,15 +195,53 @@ namespace SuperCipher
             //get header
             String[] header = cipher.Split('.');
             if (header.Length != 5)
+            {
                 MessageBox.Show("Bukan file yang dapat didekripsi", "Peringatan", MessageBoxButtons.OK);
-            else 
+                return;
+            }
+            else
             {
                 filepath = header[2];
-                iv = Encoding.ASCII.GetBytes(header[1]);
+                iv = header[1];
                 mode = header[4];
                 padding = Int32.Parse(header[5]);
                 content = StringToByteArray(header[0]);
                 extension = header[3];
+                
+                //validate key
+                if (keyBox.Text.Length != iv.Length)
+                {
+                    newKey = "";
+                    for (int i = 0; i < iv.Length; i++)
+                    {
+                        newKey += (char)(new Random().Next(255));
+                    }
+                }
+                else 
+                    newKey = keyBox.Text;
+
+                if (mode == "ECB")
+                {
+                    //ECB mode
+                    ECB ecb = new ECB(null, content, newKey, iv);
+                    modeResult = ecb.decrypt();
+                }
+                else
+                if (mode == "CBC")
+                {
+                    //Generate IV
+                    //CBC mode
+                }
+                else
+                if (mode == "CFB")
+                {
+                    //CFB mode
+                }
+                else
+                if (mode == "OFB")
+                {
+                    //OFB mode
+                }
             }
         }
 
