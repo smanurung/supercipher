@@ -56,6 +56,7 @@
             this.button1.TabIndex = 0;
             this.button1.Text = "Buka Berkas";
             this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // radioButton1
             // 
@@ -153,6 +154,7 @@
             this.button2.TabIndex = 10;
             this.button2.Text = "Enkripsi";
             this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
             // button3
             // 
@@ -172,6 +174,7 @@
             this.button4.TabIndex = 12;
             this.button4.Text = "Simpan";
             this.button4.UseVisualStyleBackColor = true;
+            this.button4.Click += new System.EventHandler(this.button4_Click);
             // 
             // Form1
             // 
