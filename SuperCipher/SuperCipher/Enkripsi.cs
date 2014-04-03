@@ -102,8 +102,11 @@ namespace SuperCipher
             {
                 result = transpose(result);
                 result = addRoundKey(result);
-
             }
+            
+            result = transpose(result);
+            result = transpose(result);
+
             return result;
         }
     }

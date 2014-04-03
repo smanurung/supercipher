@@ -104,7 +104,16 @@ namespace SuperCipher
 
         internal byte[] decrypt(byte[] blokCipher, byte[] key)
         {
-            throw new NotImplementedException();
+            byte[] result = blokCipher;
+            result = addRoundKey(blokCipher);
+            result = transpose(result);
+            for (int i = 0; i < 8; i++)
+            {
+                result = addRoundKey(result);
+                result = transpose(result);
+            }
+            result = addRoundKey(result);
+            return result;
         }
     }
 }
