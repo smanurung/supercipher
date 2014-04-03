@@ -16,7 +16,7 @@ namespace SuperCipher
         private byte[] plain;
         private byte[] cipher;
 
-        public CFB(byte[] plain, byte[] cipher, String key, String iv)
+        public OFB(byte[] plain, byte[] cipher, String key, String iv)
         {
             this.plain = plain;
             this.key = key;
