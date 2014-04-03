@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SuperCipher
 {
-    class OFB
+    public class OFB
     {
         //private String plain;
         //private String cipher;
@@ -38,37 +38,34 @@ namespace SuperCipher
             byte[] pbyte = this.plain;
             byte[] cbyte = new byte[pbyte.Length];
 
-            for (int i = 0; i < (pbyte.Length / blok); i++)
+            for (int i = 0; i <= (pbyte.Length / blok); i++)
             {
                 //get internal key
-                ikey = enkripsi.encrypt(Encoding.ASCII.GetBytes(key), register);
+                //ikey = enkripsi.encrypt(Encoding.ASCII.GetBytes(key), register);
+                ikey = register;
 
                 //get block-sized plaintext
-                byte[] pi = new byte[blok];
-                byte[] ci = new byte[blok];
+                byte[] ci;
+                byte[] pi;
 
-                //if((pbyte.Length - (i * blok)) >= blok)
-                //{
-                //    pi = pbyte.Skip(i * blok).Take(blok).ToArray();
-                //}
-                //else
-                //{
-                //    pi = pbyte.Skip(i * blok).Take(pbyte.Length - (i * blok)).ToArray();
-                //    int padsize = blok - pbyte.Length + (i * blok);
-
-                //    insert padding 0
-                //    for(int k = 0; k < padsize; k++)
-                //    {
-                //        pi[blok - k] = 0;
-                //    }
-                //}
-
-                pi = pbyte.Skip(i * blok).Take(pbyte.Length - (i * blok)).ToArray();
-
-                ci = xor(pi, ikey);
-                for (int m = 0; m < blok; m++)
+                if (pbyte.Length - (i * blok) >= blok)
                 {
-                    cbyte[i * blok + m] = pi[m];
+                    ci = new byte[blok];
+                    pi = new byte[blok];
+                    pi = pbyte.Skip(i * blok).Take(blok).ToArray();
+                }
+                else
+                {
+                    pi = new byte[pbyte.Length - (i * blok)];
+                    ci = new byte[pbyte.Length - (i * blok)];
+                    pi = pbyte.Skip(i * blok).Take(pbyte.Length - (i * blok)).ToArray();
+                }
+
+                ikey = ikey.Skip(0).Take(pi.Length).ToArray();
+                ci = xor(pi, ikey);
+                for (int m = 0; m < ikey.Length; m++)
+                {
+                    cbyte[i * blok + m] = ikey[m];
                 }
 
                 //wrap register
@@ -88,7 +85,7 @@ namespace SuperCipher
             {
                 res[j] = (byte)(i[j] ^ key[j]);
             }
-            
+
             return res;
         }
 
@@ -120,7 +117,7 @@ namespace SuperCipher
                 pi = xor(ci, ikey);
                 for (int m = 0; m < blok; m++)
                 {
-                    pbyte[i * blok + m] = ci[m];
+                    pbyte[i * blok + m] = ikey[m];
                 }
 
                 //wrap register
