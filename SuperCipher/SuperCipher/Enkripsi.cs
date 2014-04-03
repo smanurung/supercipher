@@ -10,14 +10,7 @@ namespace SuperCipher
 {
     public class Enkripsi
     {
-        byte[][] internalKey; //digunakan pada generateInternalKey, addRoundKey
-
-
-
-        public void setHeader(String iv, String filename, String ext, int totalPading)
-        {
-
-        }
+        private byte[][] internalKey; //digunakan pada generateInternalKey, addRoundKey
 
         public void generateAllInternalKey(string key) //men-generate seluruh (10) internal key dengan pseudo random
         {
@@ -121,14 +114,20 @@ namespace SuperCipher
             return b;
         }
 
-        internal byte[] encrypt(byte[] p, byte[] register)
+        internal byte[] encrypt(byte[] blokPlain, byte[] key)
         {
-            throw new NotImplementedException();
-        }
+            byte[] result = blokPlain;
+            result = addRoundKey(blokPlain);
+            for (int i = 0; i < 8; i++)
+            {
+                result = transpose(result);
+                result = addRoundKey(result);
+            }
+            
+            result = transpose(result);
+            result = transpose(result);
 
-        internal byte[] encrypt(string p1, byte[] p2)
-        {
-            throw new NotImplementedException();
+            return result;
         }
     }
 }
