@@ -284,8 +284,9 @@ namespace SuperCipher
 
             try
             {
-                Console.Write("\nInput file name: ");
-                fileString = Console.ReadLine();
+                //Console.Write("\nInput file name: ");
+                //fileString = Console.ReadLine();
+                fileString = "output_encipher.txt";
                 Console.WriteLine();
                 string output = "";
                 byte[] bytes = File.ReadAllBytes(fileString);
@@ -298,7 +299,14 @@ namespace SuperCipher
 
                 String inputText = utf8.GetString(bytes);
                 Console.WriteLine(inputText);
+                //string[] b = bytes.Select(x => Convert.ToString(x, 2).PadLeft(8, '0')).ToArray();
+                //string binaryString = "";
+                //foreach (String a in b)
+                //{
+                //    binaryString += a;
+                //}
                 this.inputText = output;
+                Console.WriteLine("BOO " + this.inputText);
 
             }
             catch (Exception)
@@ -316,8 +324,9 @@ namespace SuperCipher
 
             try
             {
-                Console.Write("\nInput IV File: ");
-                fileString = Console.ReadLine();
+                //Console.Write("\nInput IV File: ");
+                //fileString = Console.ReadLine();
+                fileString = "iv.txt";
                 Console.WriteLine();
                 file = new StreamReader(fileString);
                 iv = file.ReadToEnd();
@@ -349,6 +358,50 @@ namespace SuperCipher
             {
                 Console.WriteLine("> File not found.");
             }
+        }
+
+        public void saveFile(int _index)
+        {
+            if (_index == 0)
+            {
+                try
+                {
+                    File.WriteAllBytes("output_encipher.txt", this.outputBytes);
+                    Console.WriteLine("\n> CBC enciphering result has been saved into output_encipher.txt");
+                }
+                catch (Exception)
+                {
+                    Console.WriteLine("> File not found.");
+                }
+            }
+            else if (_index == 1)
+            {
+                try
+                {
+                    File.WriteAllBytes("output_decipher.txt", this.outputBytes);
+                    Console.WriteLine("\n> CBC deciphering result has been saved into output_decipher.txt");
+                }
+                catch (Exception)
+                {
+                    Console.WriteLine("> File not found.");
+                }
+            }
+        }
+
+        public byte[] ConvertToBinary(string str)
+        {
+            System.Text.ASCIIEncoding encoding = new System.Text.ASCIIEncoding();
+            return encoding.GetBytes(str);
+        }
+
+        public String GetStringBytes(byte[] bytes) {
+            String res = "";
+
+            foreach (int _bit in bytes) {
+                res += _bit.ToString();
+            }
+
+            return res;
         }
     }
 }
