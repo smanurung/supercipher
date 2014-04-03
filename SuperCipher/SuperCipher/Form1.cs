@@ -13,14 +13,14 @@ namespace SuperCipher
 {
     public partial class Form1 : Form
     {
-        private String filename;
+        private String filepath;
         private String extension;
 
         public Form1()
         {
             InitializeComponent();
             textBox3.ReadOnly = true;
-            this.filename = "default";
+            this.filepath = "default";
         }
 
         private void radioButton2_CheckedChanged(object sender, EventArgs e)
@@ -74,7 +74,7 @@ namespace SuperCipher
             if(openFileDialog1.ShowDialog() == DialogResult.OK)
             {
                 MessageBox.Show("File: "+openFileDialog1.FileName, "Confirm", MessageBoxButtons.YesNo);
-                //show on the editor for textual extension files
+                //this.filepath = openFileDialog1.FileName;
             }
         }
 
@@ -82,10 +82,10 @@ namespace SuperCipher
         {
             //savefile
             String path = System.IO.Directory.GetCurrentDirectory();
-            Console.WriteLine(path);
-            System.IO.File.WriteAllText(System.IO.Directory.GetCurrentDirectory() + "/" + this.filename, textBox3.Text);
+            System.IO.File.WriteAllText(System.IO.Directory.GetCurrentDirectory() + "/" + Path.GetFileName(filepath), textBox3.Text);
         }
 
+        //enkripsi
         private void button2_Click(object sender, EventArgs e)
         {
             //menyimpan hasil paling akhir
@@ -152,10 +152,11 @@ namespace SuperCipher
             result = ByteArrayToString(modeResult);
 
             //set header
-            result += "." + ivBox.Text + "." + Path.GetFileNameWithoutExtension(filename) + "." + Path.GetExtension(filename) + "." + mode + "." + (keyBox.Text.Length- (plain.Length % keyBox.Text.Length)).ToString();
+            result += "." + ivBox.Text + "." + Path.GetFileNameWithoutExtension(filepath) + Path.GetExtension(filepath) + "." + mode + "." + (keyBox.Text.Length- (plain.Length % keyBox.Text.Length)).ToString();
             textBox3.Text = result;
         }
 
+        //dekripsi
         private void button3_Click(object sender, EventArgs e)
         {
             //header variable
@@ -192,17 +193,13 @@ namespace SuperCipher
                 MessageBox.Show("Bukan file yang dapat didekripsi", "Peringatan", MessageBoxButtons.OK);
             else 
             {
-                filename = header[2];
+                filepath = header[2];
                 iv = Encoding.ASCII.GetBytes(header[1]);
                 mode = header[4];
                 padding = Int32.Parse(header[5]);
                 content = StringToByteArray(header[0]);
                 extension = header[3];
             }
-
-            //decrypt
-
-            //show to editor
         }
 
         private String ByteArrayToString(byte[] b)
