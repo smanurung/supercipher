@@ -13,10 +13,13 @@ namespace SuperCipher
 {
     public partial class Form1 : Form
     {
+        private String filename;
+
         public Form1()
         {
             InitializeComponent();
             textBox3.ReadOnly = true;
+            this.filename = "default";
         }
 
         private void radioButton2_CheckedChanged(object sender, EventArgs e)
@@ -76,7 +79,10 @@ namespace SuperCipher
 
         private void button4_Click(object sender, EventArgs e)
         {
-            
+            //savefile
+            String path = System.IO.Directory.GetCurrentDirectory();
+            Console.WriteLine(path);
+            System.IO.File.WriteAllText(System.IO.Directory.GetCurrentDirectory() + "/" + this.filename, textBox3.Text);
         }
 
         private void button2_Click(object sender, EventArgs e)
