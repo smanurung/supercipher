@@ -30,30 +30,58 @@ namespace SuperCipher
             //start encryption
             Enkripsi enkripsi = new Enkripsi();
 
+            Int32 blok = Encoding.ASCII.GetBytes(this.key).Length;
             byte[] pbyte = Encoding.ASCII.GetBytes(this.plain);
             byte[] cbyte = new byte[pbyte.Length];
 
-            int i = 0;
-            foreach(byte b in pbyte)
+            for (int i = 0; i < (pbyte.Length / blok); i++)
             {
+                //get internal key
                 ikey = enkripsi.encrypt(Encoding.ASCII.GetBytes(key), register);
 
-                //get least significant byte
-                Byte first = ikey[0];
+                //get block-sized plaintext
+                byte[] pi = new byte[blok];
+                byte[] ci = new byte[blok];
 
-                //xor first with b
-                Byte temp = (byte)(first ^ b);
+                if((pbyte.Length - (i * blok)) >= blok)
+                {
+                    pi = pbyte.Skip(i * blok).Take(blok).ToArray();
+                }
+                else
+                {
+                    pi = pbyte.Skip(i * blok).Take(pbyte.Length - (i * blok)).ToArray();
+                    int padsize = blok - pbyte.Length + (i * blok);
 
-                //insert cipher
-                cbyte[i] = temp;
-                i += 1;
+                    //insert padding 0
+                    for(int k = 0; k < padsize; k++)
+                    {
+                        pi[blok - k] = 0;
+                    }
+                }
+
+                ci = xor(pi, ikey);
+                for (int m = 0; m < blok; m++)
+                {
+                    cbyte[i * blok + m] = ci[m];
+                }
 
                 //wrap register
-                Array.Copy(register, 1, register, 0, register.Length-1);
-                register[register.Length - 1] = temp;
+                register = cbyte;
             }
 
             return Encoding.ASCII.GetString(cbyte);
+        }
+
+        public byte[] xor(byte[] i, byte[] key)
+        {
+            byte[] res = new byte[i.Length];
+
+            for (int j = 0; j < i.Length; j++)
+            {
+                res[j] = (byte)(i[j] ^ key[j]);
+            }
+            
+            return res;
         }
 
         public String decrypt()
