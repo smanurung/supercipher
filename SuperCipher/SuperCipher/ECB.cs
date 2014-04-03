@@ -53,7 +53,7 @@ namespace SuperCipher
             {
                 byte[] blockCipher = new byte[key.Length];
                 Array.Copy(cipher, key.Length * i, blockCipher, 0, key.Length);
-                this.plain = dekripsi.decrypt(blockCipher, Encoding.ASCII.GetBytes(key)));
+                this.plain = dekripsi.decrypt(blockCipher, Encoding.ASCII.GetBytes(key));
             }
             return this.plain;
         }

@@ -125,7 +125,7 @@ namespace SuperCipher
 
             //check used mode
             if (radioButton1.Checked)
-            
+            {
                 //ECB mode
                 mode = "ECB";
             }
