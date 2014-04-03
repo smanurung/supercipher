@@ -105,6 +105,9 @@ namespace SuperCipher
                 }
             }
 
+            //read file content (plaintext)
+            byte[] plain = System.IO.File.ReadAllBytes(openFileDialog1.FileName);
+
             //check used mode
             if (radioButton1.Checked)
             {
@@ -118,20 +121,19 @@ namespace SuperCipher
             }
             else if (radioButton3.Checked)
             {
-                //read file content (plaintext)
-                byte[] plain = System.IO.File.ReadAllBytes(openFileDialog1.FileName);
-
                 //CFB mode
                 CFB cfb = new CFB(plain, null ,keyBox.Text,ivBox.Text);
                 byte[] resb = cfb.encrypt();
-
-                //convert byte to hex
-
             }
             else if (radioButton4.Checked)
             {
                 //OFB mode
             }
+
+            //set header
+
+            //convert byte to hex
+            textBox3.Text = ByteArrayToString(plain);
         }
 
         private String ByteArrayToString(byte[] b)
@@ -151,6 +153,32 @@ namespace SuperCipher
             for (int i = 0; i < NumberChars; i += 2)
                 bytes[i / 2] = Convert.ToByte(hex.Substring(i, 2), 16);
             return bytes;
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            //validate input file
+            if (openFileDialog1.FileName.Equals("openFileDialog1"))
+            {
+                MessageBox.Show("Anda belum memasukan input file", "Peringatan", MessageBoxButtons.OK);
+                return;
+            }
+
+            //validasi kunci
+            //key.length >= 8-byte
+            if (keyBox.Text.Length < 8)
+            {
+                MessageBox.Show("Panjang kunci kurang dari 64-bit", "Peringatan", MessageBoxButtons.OK);
+                return;
+            }
+
+            //no need for iv
+
+            //get header
+
+            //decrypt
+
+            //show to editor
         }
     }
 }
