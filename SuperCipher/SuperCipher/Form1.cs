@@ -191,9 +191,6 @@ namespace SuperCipher
                 content = StringToByteArray(header[0]);
                 extension = header[3];
             }
-            
-            //convert hex to byte[]
-            content = 
 
             //decrypt
 
