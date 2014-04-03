@@ -20,7 +20,7 @@ namespace SuperCipher
         {
             InitializeComponent();
             textBox3.ReadOnly = true;
-            this.filepath = "default.txt";
+            this.filepath = "harus.diganti";
         }
 
         private void radioButton2_CheckedChanged(object sender, EventArgs e)
@@ -74,7 +74,8 @@ namespace SuperCipher
             if(openFileDialog1.ShowDialog() == DialogResult.OK)
             {
                 MessageBox.Show("File: "+openFileDialog1.FileName, "Confirm", MessageBoxButtons.YesNo);
-                //this.filepath = openFileDialog1.FileName;
+                this.filepath = openFileDialog1.FileName;
+                Console.WriteLine("filepath:{0}",this.filepath);
             }
         }
 
@@ -82,7 +83,7 @@ namespace SuperCipher
         {
             //savefile
             String path = System.IO.Directory.GetCurrentDirectory();
-            System.IO.File.WriteAllText(System.IO.Directory.GetCurrentDirectory() + "/" + Path.GetFileName(filepath), textBox3.Text);
+            System.IO.File.WriteAllText(System.IO.Directory.GetCurrentDirectory() + "/" + "default.txt", textBox3.Text);
         }
 
         //enkripsi
@@ -160,11 +161,16 @@ namespace SuperCipher
         private void button3_Click(object sender, EventArgs e)
         {
             //header variable
-            byte[] iv = new byte[1];
+            String iv;
             int padding;
             byte[] content = new byte[1];
             String mode = "";
+            
+            //instead of keyBox.Text use this
+            String newKey = "";
 
+            //result for each mode
+            byte[] modeResult;
 
             //validate input file
             if (openFileDialog1.FileName.Equals("openFileDialog1"))
@@ -189,32 +195,68 @@ namespace SuperCipher
 
             //get header
             String[] header = cipher.Split('.');
-            foreach(String s in header)
-            {
-                Console.WriteLine(s);
-            }
-            String filename = "";
             if (header.Length != 6)
+            {
                 MessageBox.Show("Bukan file yang dapat didekripsi", "Peringatan", MessageBoxButtons.OK);
+                return;
+            }
             else
             {
-                filename = header[2];
-                iv = Encoding.ASCII.GetBytes(header[1]);
+                filepath = header[2];
+                iv = header[1];
                 Console.WriteLine("iv: {0}",iv[0]);
                 mode = header[4];
                 padding = Int32.Parse(header[5]);
                 content = StringToByteArray(header[0]);
                 Console.WriteLine(content[0]);
                 extension = header[3];
-            }
+                Console.WriteLine("ext:{0}",extension);
+                
+                //validate key
+                if (keyBox.Text.Length != iv.Length)
+                {
+                    newKey = "";
+                    for (int i = 0; i < iv.Length; i++)
+                    {
+                        newKey += (char)(new Random().Next(255));
+                    }
+                }
+                else 
+                    newKey = keyBox.Text;
 
-            if (mode.Equals("CFB"))
-            {
-                CFB cfb = new CFB(null, content, keyBox.Text, Encoding.ASCII.GetString(iv));
-                Console.WriteLine(Encoding.ASCII.GetString(iv));
-                byte[] pbytes = cfb.decrypt();
-                Console.WriteLine("hasil dekripsi: {0}", ByteArrayToString(pbytes));
-                textBox3.Text = ByteArrayToString(pbytes);
+                if (mode.Equals("ECB"))
+                {
+                    //ECB mode
+                    ECB ecb = new ECB(null, content, newKey, iv);
+                    modeResult = ecb.decrypt();
+                }
+                else
+                if (mode.Equals("CBC"))
+                {
+                    //Generate IV
+                    //CBC mode
+                }
+                else
+                if (mode.Equals("CFB"))
+                {
+                    //CFB mode
+                    CFB cfb = new CFB(null, content, keyBox.Text, iv);
+                    Console.WriteLine(iv);
+                    byte[] pbytes = cfb.decrypt();
+                    Console.WriteLine("hasil dekripsi: {0}", ByteArrayToString(pbytes));
+                    textBox3.Text = ByteArrayToString(pbytes);
+
+                    //show plaintext if using text extension
+                    if (extension.Equals("txt"))
+                    {
+                        textBox3.Text += Environment.NewLine + Environment.NewLine + Encoding.ASCII.GetString(pbytes);
+                    }
+                }
+                else
+                if (mode.Equals("OFB"))
+                {
+                    //OFB mode
+                }
             }
         }
 
