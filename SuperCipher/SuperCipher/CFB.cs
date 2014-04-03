@@ -8,12 +8,15 @@ namespace SuperCipher
 {
     class CFB
     {
-        private String plain;
-        private String cipher;
+        //private String plain;
+        //private String cipher;
         private String key;
-        private String iv;
+        private string iv;
 
-        public CFB(String plain, String cipher, String key, String iv)
+        private byte[] plain;
+        private byte[] cipher;
+
+        public CFB(byte[] plain, byte[] cipher, String key, String iv)
         {
             this.plain = plain;
             this.key = key;
@@ -21,7 +24,7 @@ namespace SuperCipher
             this.cipher = cipher;
         }
 
-        public String encrypt()
+        public byte[] encrypt()
         {
             //form shift register
             byte[] register = Encoding.ASCII.GetBytes(this.iv);
@@ -31,7 +34,8 @@ namespace SuperCipher
             Enkripsi enkripsi = new Enkripsi();
 
             Int32 blok = Encoding.ASCII.GetBytes(this.key).Length;
-            byte[] pbyte = Encoding.ASCII.GetBytes(this.plain);
+            //byte[] pbyte = Encoding.ASCII.GetBytes(this.plain);
+            byte[] pbyte = this.plain;
             byte[] cbyte = new byte[pbyte.Length];
 
             for (int i = 0; i < (pbyte.Length / blok); i++)
@@ -71,7 +75,8 @@ namespace SuperCipher
                 register = cbyte;
             }
 
-            this.cipher = Encoding.ASCII.GetString(cbyte);
+            //this.cipher = Encoding.ASCII.GetString(cbyte);
+            this.cipher = cbyte;
             return this.cipher;
         }
 
@@ -87,7 +92,7 @@ namespace SuperCipher
             return res;
         }
 
-        public String decrypt()
+        public byte[] decrypt()
         {
             //form shift register
             byte[] register = Encoding.ASCII.GetBytes(this.iv);
@@ -97,7 +102,8 @@ namespace SuperCipher
             Enkripsi enkripsi = new Enkripsi();
 
             Int32 blok = Encoding.ASCII.GetBytes(this.key).Length;
-            byte[] cbyte = Encoding.ASCII.GetBytes(this.cipher);
+            //byte[] cbyte = Encoding.ASCII.GetBytes(this.cipher);
+            byte[] cbyte = this.cipher;
             byte[] pbyte = new byte[cbyte.Length];
 
             for (int i = 0; i < (cbyte.Length / blok); i++)
@@ -121,7 +127,8 @@ namespace SuperCipher
                 register = cbyte;
             }
 
-            this.plain = Encoding.ASCII.GetString(pbyte);
+            //this.plain = Encoding.ASCII.GetString(pbyte);
+            this.plain = pbyte;
             return this.plain;
         }
     }

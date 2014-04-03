@@ -69,6 +69,8 @@ namespace SuperCipher
             if(openFileDialog1.ShowDialog() == DialogResult.OK)
             {
                 MessageBox.Show("File: "+openFileDialog1.FileName, "Confirm", MessageBoxButtons.YesNo);
+
+                //show on the editor for textual extension files
             }
         }
 
@@ -110,16 +112,45 @@ namespace SuperCipher
             }
             else if (radioButton2.Checked)
             {
+                //generate IV
+
                 //CBC mode
             }
             else if (radioButton3.Checked)
             {
+                //read file content (plaintext)
+                byte[] plain = System.IO.File.ReadAllBytes(openFileDialog1.FileName);
+
                 //CFB mode
+                CFB cfb = new CFB(plain, null ,keyBox.Text,ivBox.Text);
+                byte[] resb = cfb.encrypt();
+
+                //convert byte to hex
+
             }
             else if (radioButton4.Checked)
             {
                 //OFB mode
             }
+        }
+
+        private String ByteArrayToString(byte[] b)
+        {
+            StringBuilder hex = new StringBuilder(b.Length * 2);
+            foreach(byte a in b)
+            {
+                hex.AppendFormat("{0:x2}",a);
+            }
+            return hex.ToString();
+        }
+
+        private byte[] StringToByteArray(String hex)
+        {
+            int NumberChars = hex.Length;
+            byte[] bytes = new byte[NumberChars / 2];
+            for (int i = 0; i < NumberChars; i += 2)
+                bytes[i / 2] = Convert.ToByte(hex.Substring(i, 2), 16);
+            return bytes;
         }
     }
 }
