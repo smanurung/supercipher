@@ -1,5 +1,0 @@
-C:\Users\LENOVO Z400\Documents\GitHub\supercipher\SuperCipher\SuperCipher\bin\Debug\SuperCipher.exe.config
-C:\Users\LENOVO Z400\Documents\GitHub\supercipher\SuperCipher\SuperCipher\obj\Debug\SuperCipher.csprojResolveAssemblyReference.cache
-C:\Users\LENOVO Z400\Documents\GitHub\supercipher\SuperCipher\SuperCipher\obj\Debug\SuperCipher.Form1.resources
-C:\Users\LENOVO Z400\Documents\GitHub\supercipher\SuperCipher\SuperCipher\obj\Debug\SuperCipher.Properties.Resources.resources
-C:\Users\LENOVO Z400\Documents\GitHub\supercipher\SuperCipher\SuperCipher\obj\Debug\SuperCipher.csproj.GenerateResource.Cache
