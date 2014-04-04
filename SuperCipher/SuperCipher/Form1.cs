@@ -145,6 +145,8 @@ namespace SuperCipher
             {
                 //OFB mode
                 mode = "OFB";
+                OFB ofb = new OFB(plain, null, keyBox.Text, ivBox.Text);
+                modeResult = ofb.encrypt();
             }
             //convert byte to hex
             result = ByteArrayToString(modeResult);
@@ -253,6 +255,17 @@ namespace SuperCipher
                 if (mode.Equals("OFB"))
                 {
                     //OFB mode
+                    OFB ofb = new OFB(null, content, keyBox.Text, iv);
+                    Console.WriteLine(iv);
+                    byte[] pbytes = ofb.decrypt();
+                    Console.WriteLine("hasil dekripsi: {0}", ByteArrayToString(pbytes));
+                    textBox3.Text = ByteArrayToString(pbytes);
+
+                    //show plaintext if using text extension
+                    if (extension.Equals("txt"))
+                    {
+                        textBox3.Text += Environment.NewLine + Environment.NewLine + Encoding.ASCII.GetString(pbytes);
+                    }
                 }
 
                 textBox3.Text = Encoding.ASCII.GetString(modeResult);
