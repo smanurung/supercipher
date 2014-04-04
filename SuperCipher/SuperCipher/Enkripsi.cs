@@ -46,12 +46,12 @@ namespace SuperCipher
 
         public byte[] generateNewVector(byte[] input) //men-generate satu vector terutama IV secara pseudo random --versi sementara, ada kemungkinan di non-random-kan
         {
-            int sumInput = 0;
+            int sum = 0;
             byte[] result = new byte[input.Length];
-            for (int i = 0; i < input.Length; i++)
-                sumInput += input[i];
+            for (int i = 0; i < 10; i++)
+                sum += internalKey[i][1];
 
-            Random rnd = new Random(sumInput);
+            Random rnd = new Random(sum);
             for (int i = 0; i < input.Length; i++)
             {
                 result[i] = (byte)(rnd.Next() % 255); //random max value = 255 (ASCII)
@@ -70,6 +70,7 @@ namespace SuperCipher
             }
             return b;
         }
+
         //tabel lookup substitusi
         private static readonly byte[] TABLE = new byte[] { 0x26, 0xdc, 0xff, 0x00, 0xad, 0xed, 0x7a, 0xee, 0xc5, 0xfe, 0x07, 0xaf, 0x4d, 0x08, 0x22, 0x3c };
         public static byte[] Substitusi(byte[] b, string key)

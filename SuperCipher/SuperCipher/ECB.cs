@@ -63,12 +63,20 @@ namespace SuperCipher
         public byte[] decrypt()
         {
             Dekripsi dekripsi = new Dekripsi();
-            int blockTotal = plain.Length / key.Length;
+            int blockTotal = cipher.Length / key.Length;
+            plain = new byte[cipher.Length];
             for (int i = 0; i < blockTotal; i++)
             {
                 byte[] blockCipher = new byte[key.Length];
-                Array.Copy(cipher, key.Length * i, blockCipher, 0, key.Length);
-                this.plain = dekripsi.decrypt(blockCipher, Encoding.ASCII.GetBytes(key));
+                for (int j = 0; j < key.Length; j++)
+                {
+                    blockCipher[j] = cipher[i * key.Length + j];
+                }
+                blockCipher = dekripsi.decrypt(blockCipher, Encoding.ASCII.GetBytes(key));
+                for (int j = 0; j < key.Length; j++)
+                {
+                    this.plain[i * key.Length + j] = blockCipher[j];
+                }
             }
             return this.plain;
         }

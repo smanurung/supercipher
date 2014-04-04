@@ -10,13 +10,21 @@ namespace SuperCipher
 {
     class Dekripsi
     {
-        byte[][] internalKey; //digunakan pada generateInternalKey, addRoundKey
+        private byte[][] internalKey; //digunakan pada generateInternalKey, addRoundKey
 
         public void generateAllInternalKey(string key) //men-generate seluruh (10) internal key dengan pseudo random
         {
             byte[] byteKey = Encoding.ASCII.GetBytes(key);
             byte[] firstHalfInternalKey = new byte[key.Length / 2];
             byte[] secondHalfInternalKey = new byte[key.Length / 2];
+
+            //inisialisasi nilai internalKey
+            internalKey = new byte[10][];
+            for (int i = 0; i < 10; i++)
+            {
+                internalKey[i] = new byte[key.Length / 2];
+            }
+
             //menjumlahkan seluruh elemen key untuk menjadi integer seed
             int sumKey = 0;
             for (int i = 0; i < key.Length; i++)
@@ -38,16 +46,18 @@ namespace SuperCipher
 
         public byte[] generateNewVector(byte[] input) //men-generate satu vector terutama IV secara pseudo random --versi sementara, ada kemungkinan di non-random-kan
         {
-            int sumInput = 0;
-            for (int i = 0; i < input.Length; i++)
-                sumInput += (int)input[i];
+            int sum = 0;
+            byte[] result = new byte[input.Length];
+            for (int i = 0; i < 10; i++)
+                sum += internalKey[i][1];
 
-            Random rnd = new Random(sumInput);
+            Random rnd = new Random(sum);
             for (int i = 0; i < input.Length; i++)
             {
-                input[i] = (byte)(rnd.Next(255)); //random max value = 255 (ASCII)
+                result[i] = (byte)(rnd.Next() % 255); //random max value = 255 (ASCII)
+                result[i] = (byte)(rnd.Next() % 255); //random max value = 255 (ASCII)
             }
-            return input;
+            return result;
         }
 
         public byte[] addRoundKey(byte[] b) //mengenkripsi b (hasil feistel) dengan menggunakan suatu vector dan internal key --versi sementara, kurang rumit
@@ -55,7 +65,8 @@ namespace SuperCipher
             byte[] roundKey = generateNewVector(b);
             for (int i = 0; i < b.Length; i++)
             {
-                b[i] = (byte)((b[i] ^ internalKey[i % 10][i]) ^ roundKey[i]);
+                b[i] = (byte)((b[i] ^ internalKey[i % 10][i % 4]) ^ roundKey[i]);
+
             }
             return b;
         }
@@ -122,15 +133,9 @@ namespace SuperCipher
 
         internal byte[] decrypt(byte[] blokCipher, byte[] key)
         {
+            generateAllInternalKey(Encoding.ASCII.GetString(key));
             byte[] result = blokCipher;
             result = addRoundKey(blokCipher);
-            result = transpose(result);
-            for (int i = 0; i < 8; i++)
-            {
-                result = addRoundKey(result);
-                result = transpose(result);
-            }
-            result = addRoundKey(result);
             return result;
         }
     }
