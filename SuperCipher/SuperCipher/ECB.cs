@@ -26,21 +26,36 @@ namespace SuperCipher
             Enkripsi enkripsi = new Enkripsi();
             int leftover = plain.Length % key.Length;
             int blockTotal = plain.Length / key.Length;
+            cipher = new byte[plain.Length + key.Length - leftover];
             for (int i = 0; i < blockTotal; i++)
             {
                 byte[] blockPlain = new byte [key.Length];
-                Array.Copy(plain, key.Length * i, blockPlain, 0, key.Length);
-                this.cipher = enkripsi.encrypt(blockPlain, Encoding.ASCII.GetBytes(key));
+                for (int j = 0; j < key.Length; j++)
+                {
+                    blockPlain[j] = plain[i * key.Length + j];
+                }
+                blockPlain = enkripsi.encrypt(blockPlain, Encoding.ASCII.GetBytes(key));
+                for (int j = 0; j < key.Length; j++)
+                {
+                    this.cipher[i * key.Length + j] = blockPlain[j];
+                }
             }
             if (leftover > 0)
             {
-                byte[] tmp = new byte[this.plain.Length + key.Length - leftover];
-                byte paddingByte = 0;
-                for (int i = 0; i < key.Length - leftover; i++)
-                    tmp[blockTotal * key.Length + i] = paddingByte;
                 byte[] blockPlain = new byte[key.Length];
-                Array.Copy(tmp, key.Length * blockTotal, blockPlain, 0, key.Length);
-                this.cipher = enkripsi.encrypt(blockPlain, Encoding.ASCII.GetBytes(key));
+                byte paddingByte = 0;
+                for (int i = 0; i < key.Length; i++)
+                {
+                    if (i < leftover)
+                        blockPlain[i] = plain[blockTotal * key.Length + i];
+                    else
+                        blockPlain[i] = paddingByte;
+                }
+                blockPlain = enkripsi.encrypt(blockPlain, Encoding.ASCII.GetBytes(key));
+                for (int i = 0; i < key.Length; i++)
+                {
+                    this.cipher[blockTotal * key.Length + i] = blockPlain[i];
+                }
             }
             return this.cipher;
         }

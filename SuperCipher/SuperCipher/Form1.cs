@@ -32,15 +32,9 @@ namespace SuperCipher
 
         private void radioButton1_CheckedChanged(object sender, EventArgs e)
         {
-            //tampilkan IV
-            if(label2.Visible == false)
-            {
-                label2.Visible = true;
-            }
-            if(ivBox.Visible == false)
-            {
-                ivBox.Visible = true;
-            }
+            //hilangkan IV
+            label2.Visible = false;
+            ivBox.Visible = false;
         }
 
         private void radioButton3_CheckedChanged(object sender, EventArgs e)
@@ -113,7 +107,7 @@ namespace SuperCipher
             else
             {
                 //IV.length = key.length
-                if ((!radioButton2.Checked) && (ivBox.Text.Length != keyBox.Text.Length))
+                if ((!radioButton2.Checked && !radioButton1.Checked) && (ivBox.Text.Length != keyBox.Text.Length))
                 {
                     MessageBox.Show("Panjang IV tidak sama dengan panjang kunci", "Peringatan", MessageBoxButtons.OK);
                     return;
@@ -129,6 +123,8 @@ namespace SuperCipher
             {
                 //ECB mode
                 mode = "ECB";
+                ECB ecb = new ECB (plain, null, keyBox.Text, ivBox.Text);
+                modeResult = ecb.encrypt();
             }
             else if (radioButton2.Checked)
             {
@@ -277,6 +273,11 @@ namespace SuperCipher
             for (int i = 0; i < NumberChars; i += 2)
                 bytes[i / 2] = Convert.ToByte(hex.Substring(i, 2), 16);
             return bytes;
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }
