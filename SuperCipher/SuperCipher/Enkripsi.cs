@@ -263,7 +263,7 @@ namespace SuperCipher
                 result = feistel(result, internalKey);
                 result = addRoundKey(result);
             }
-
+            
             result = Substitusi(result, Encoding.ASCII.GetString(key));
             result = transpose(result);
             result = addRoundKey(result);

@@ -87,6 +87,7 @@ namespace SuperCipher
             cryptoStream.Close();
             return memoryStream.ToArray();
         }
+
         public byte[] transpose(byte[] b)
         {
             UInt32 length = (UInt32)b.Length;
@@ -265,10 +266,10 @@ namespace SuperCipher
             int loop = 1;
             for (int i = 0; i < loop; i++)
             {
-                result = addRoundKey(result);
+                //result = addRoundKey(result);
                 result = feistelDecipher(result,internalKey);
-                result = transpose(result);
-                result = Substitusi(result, Encoding.ASCII.GetString(key));
+                //result = transpose(result);
+                //result = Substitusi(result, Encoding.ASCII.GetString(key));
             }
             result = addRoundKey(result);
             return result;
