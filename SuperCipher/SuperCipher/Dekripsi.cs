@@ -10,13 +10,21 @@ namespace SuperCipher
 {
     class Dekripsi
     {
-        byte[][] internalKey; //digunakan pada generateInternalKey, addRoundKey
+        private byte[][] internalKey; //digunakan pada generateInternalKey, addRoundKey
 
         public void generateAllInternalKey(string key) //men-generate seluruh (10) internal key dengan pseudo random
         {
             byte[] byteKey = Encoding.ASCII.GetBytes(key);
             byte[] firstHalfInternalKey = new byte[key.Length / 2];
             byte[] secondHalfInternalKey = new byte[key.Length / 2];
+
+            //inisialisasi nilai internalKey
+            internalKey = new byte[10][];
+            for (int i = 0; i < 10; i++)
+            {
+                internalKey[i] = new byte[key.Length / 2];
+            }
+
             //menjumlahkan seluruh elemen key untuk menjadi integer seed
             int sumKey = 0;
             for (int i = 0; i < key.Length; i++)
@@ -38,16 +46,18 @@ namespace SuperCipher
 
         public byte[] generateNewVector(byte[] input) //men-generate satu vector terutama IV secara pseudo random --versi sementara, ada kemungkinan di non-random-kan
         {
-            int sumInput = 0;
-            for (int i = 0; i < input.Length; i++)
-                sumInput += (int)input[i];
+            int sum = 0;
+            byte[] result = new byte[input.Length];
+            for (int i = 0; i < 10; i++)
+                sum += internalKey[i][1];
 
-            Random rnd = new Random(sumInput);
+            Random rnd = new Random(sum);
             for (int i = 0; i < input.Length; i++)
             {
-                input[i] = (byte)(rnd.Next(255)); //random max value = 255 (ASCII)
+                result[i] = (byte)(rnd.Next() % 255); //random max value = 255 (ASCII)
+                result[i] = (byte)(rnd.Next() % 255); //random max value = 255 (ASCII)
             }
-            return input;
+            return result;
         }
 
         public byte[] addRoundKey(byte[] b) //mengenkripsi b (hasil feistel) dengan menggunakan suatu vector dan internal key --versi sementara, kurang rumit
@@ -55,7 +65,8 @@ namespace SuperCipher
             byte[] roundKey = generateNewVector(b);
             for (int i = 0; i < b.Length; i++)
             {
-                b[i] = (byte)((b[i] ^ internalKey[i % 10][i]) ^ roundKey[i]);
+                b[i] = (byte)((b[i] ^ internalKey[i % 10][i % 4]) ^ roundKey[i]);
+
             }
             return b;
         }
@@ -76,6 +87,7 @@ namespace SuperCipher
             cryptoStream.Close();
             return memoryStream.ToArray();
         }
+
         public byte[] transpose(byte[] b)
         {
             UInt32 length = (UInt32)b.Length;
@@ -120,15 +132,144 @@ namespace SuperCipher
             return b;
         }
 
+        public byte[] feistelDecipher(byte[] plain, byte[][] b)
+        {
+            Console.WriteLine("masuk feistel decipher");
+
+            //temp var
+            byte[] L = new byte[b[0].Length];
+            byte[] R = new byte[b[0].Length];
+
+            //res var
+            byte[] resL = new byte[b[0].Length];
+            byte[] resR = new byte[b[0].Length];
+            byte[] res = new byte[plain.Length];
+
+            Console.WriteLine("L, R=" + L.Length + "," + R.Length);
+            Console.WriteLine("resL, resR=" + resL.Length + "," + resR.Length);
+
+            //inisialisasi bagian kanan dan kiri, disamakan dengan bentuk bytes plainteks
+            for (int left = 0; left < plain.Length / 2; left++)
+            {
+                resL[left] = plain[left];
+                L[left] = plain[left];
+            }
+            for (int right = plain.Length / 2; right < plain.Length; right++)
+            {
+                resR[right - plain.Length / 2] = plain[right];
+                R[right - plain.Length / 2] = plain[right];
+            }
+
+            Console.WriteLine("Nilai awal L dan R: ");
+            for (int xx = 0; xx < resL.Length; xx++)
+            {
+                Console.Write(resL[xx].ToString());
+            }
+            Console.Write(" ");
+            for (int xx = 0; xx < resL.Length; xx++)
+            {
+                Console.Write(resR[xx].ToString());
+            }
+            Console.WriteLine("");
+
+            //feistel
+            int j = 9;
+            do
+            {
+                //1 ronde feistel
+                for (int i = 0; i < R.Length; i++)
+                {
+                    R[i] = resR[i];
+                }
+                for (int i = 0; i < L.Length; i++)
+                {
+                    L[i] = (byte)(resL[i] ^ (R[i] ^ b[j][i]));
+                }
+                for (int x = 0; x < L.Length; x++)
+                {
+                    resR[x] = L[x];
+                }
+                for (int y = 0; y < R.Length; y++)
+                {
+                    resL[y] = R[y];
+                }
+
+                Console.WriteLine("iterasi #" + (j + 1));
+                for (int xx = 0; xx < resL.Length; xx++)
+                {
+                    Console.Write(resL[xx].ToString() + " ");
+                }
+                Console.Write("|");
+                for (int xx = 0; xx < resL.Length; xx++)
+                {
+                    Console.Write(resR[xx].ToString() + " ");
+                }
+                Console.WriteLine("");
+
+                j--;
+            } while (j >= 1);
+
+            //ronde terakhir feistel
+            for (int i = 0; i < R.Length; i++)
+            {
+                R[i] = resR[i];
+            }
+            for (int i = 0; i < L.Length; i++)
+            {
+                L[i] = (byte)(resL[i] ^ (R[i] ^ b[0][i]));
+            }
+            for (int x = 0; x < L.Length; x++)
+            {
+                resR[x] = R[x];
+            }
+            for (int y = 0; y < R.Length; y++)
+            {
+                resL[y] = L[y];
+            }
+
+            Console.WriteLine("iterasi #1");
+            for (int xx = 0; xx < resL.Length; xx++)
+            {
+                Console.Write(resL[xx].ToString() + " ");
+            }
+            Console.Write("|");
+            for (int xx = 0; xx < resL.Length; xx++)
+            {
+                Console.Write(resR[xx].ToString() + " ");
+            }
+            Console.WriteLine("");
+
+            for (int i = 0; i < resL.Length; i++)
+            {
+                res[i] = resL[i];
+            }
+            for (int i = 0; i < resR.Length; i++)
+            {
+                res[i + resR.Length] = resR[i];
+            }
+
+            Console.Write("feistel decipher result = ");
+            for (int xx = 0; xx < res.Length; xx++)
+            {
+                Console.Write(res[xx]);
+            }
+            return res;
+        }
+
         internal byte[] decrypt(byte[] blokCipher, byte[] key)
         {
+            generateAllInternalKey(Encoding.ASCII.GetString(key));
             byte[] result = blokCipher;
-            result = addRoundKey(blokCipher);
+            result = addRoundKey(result);
             result = transpose(result);
-            for (int i = 0; i < 8; i++)
+            result = Substitusi(result, Encoding.ASCII.GetString(key));
+            int loop = 1;
+            for (int i = 0; i < loop; i++)
             {
-                result = addRoundKey(result);
-                result = transpose(result);
+                //result = addRoundKey(result);
+                result = feistelDecipher(result,internalKey);
+                //result = transpose(result);
+                //result = Substitusi(result, Encoding.ASCII.GetString(key));
             }
             result = addRoundKey(result);
             return result;

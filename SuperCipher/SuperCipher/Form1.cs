@@ -32,15 +32,9 @@ namespace SuperCipher
 
         private void radioButton1_CheckedChanged(object sender, EventArgs e)
         {
-            //tampilkan IV
-            if(label2.Visible == false)
-            {
-                label2.Visible = true;
-            }
-            if(ivBox.Visible == false)
-            {
-                ivBox.Visible = true;
-            }
+            //hilangkan IV
+            label2.Visible = false;
+            ivBox.Visible = false;
         }
 
         private void radioButton3_CheckedChanged(object sender, EventArgs e)
@@ -113,7 +107,7 @@ namespace SuperCipher
             else
             {
                 //IV.length = key.length
-                if ((!radioButton2.Checked) && (ivBox.Text.Length != keyBox.Text.Length))
+                if ((!radioButton2.Checked && !radioButton1.Checked) && (ivBox.Text.Length != keyBox.Text.Length))
                 {
                     MessageBox.Show("Panjang IV tidak sama dengan panjang kunci", "Peringatan", MessageBoxButtons.OK);
                     return;
@@ -129,6 +123,9 @@ namespace SuperCipher
             {
                 //ECB mode
                 mode = "ECB";
+                ECB ecb = new ECB (plain, null, keyBox.Text, ivBox.Text);
+                modeResult = ecb.encrypt();
+                Console.WriteLine();
             }
             else if (radioButton2.Checked)
             {
@@ -148,6 +145,8 @@ namespace SuperCipher
             {
                 //OFB mode
                 mode = "OFB";
+                OFB ofb = new OFB(plain, null, keyBox.Text, ivBox.Text);
+                modeResult = ofb.encrypt();
             }
             //convert byte to hex
             result = ByteArrayToString(modeResult);
@@ -167,10 +166,10 @@ namespace SuperCipher
             String mode = "";
             
             //instead of keyBox.Text use this
-            String newKey = "";
+            String newKey = keyBox.Text;
 
             //result for each mode
-            byte[] modeResult;
+            byte[] modeResult = new byte[keyBox.Text.Length];
 
             //validate input file
             if (openFileDialog1.FileName.Equals("openFileDialog1"))
@@ -204,7 +203,7 @@ namespace SuperCipher
             {
                 filepath = header[2];
                 iv = header[1];
-                Console.WriteLine("iv: {0}",iv[0]);
+                //Console.WriteLine("iv: {0}",iv[0]);
                 mode = header[4];
                 padding = Int32.Parse(header[5]);
                 content = StringToByteArray(header[0]);
@@ -212,23 +211,23 @@ namespace SuperCipher
                 extension = header[3];
                 Console.WriteLine("ext:{0}",extension);
                 
-                //validate key
-                if (keyBox.Text.Length != iv.Length)
+                //validate key 
+                if (content.Length % keyBox.Text.Length != 0)
                 {
                     newKey = "";
-                    for (int i = 0; i < iv.Length; i++)
+                    Random rnd = new Random(content.Length);
+                    for (int i = 0; i < (content.Length); i++)
                     {
-                        newKey += (char)(new Random().Next(255));
+                        newKey += rnd.Next() % 255;
                     }
                 }
-                else 
-                    newKey = keyBox.Text;
 
                 if (mode.Equals("ECB"))
                 {
                     //ECB mode
                     ECB ecb = new ECB(null, content, newKey, iv);
                     modeResult = ecb.decrypt();
+                    Console.WriteLine();
                 }
                 else
                 if (mode.Equals("CBC"))
@@ -256,7 +255,20 @@ namespace SuperCipher
                 if (mode.Equals("OFB"))
                 {
                     //OFB mode
+                    OFB ofb = new OFB(null, content, keyBox.Text, iv);
+                    Console.WriteLine(iv);
+                    byte[] pbytes = ofb.decrypt();
+                    Console.WriteLine("hasil dekripsi: {0}", ByteArrayToString(pbytes));
+                    textBox3.Text = ByteArrayToString(pbytes);
+
+                    //show plaintext if using text extension
+                    if (extension.Equals("txt"))
+                    {
+                        textBox3.Text += Environment.NewLine + Environment.NewLine + Encoding.ASCII.GetString(pbytes);
+                    }
                 }
+
+                textBox3.Text = Encoding.ASCII.GetString(modeResult);
             }
         }
 
@@ -277,6 +289,11 @@ namespace SuperCipher
             for (int i = 0; i < NumberChars; i += 2)
                 bytes[i / 2] = Convert.ToByte(hex.Substring(i, 2), 16);
             return bytes;
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }
