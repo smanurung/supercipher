@@ -125,7 +125,6 @@ namespace SuperCipher
                 mode = "ECB";
                 ECB ecb = new ECB (plain, null, keyBox.Text, ivBox.Text);
                 modeResult = ecb.encrypt();
-                Console.WriteLine();
             }
             else if (radioButton2.Checked)
             {
