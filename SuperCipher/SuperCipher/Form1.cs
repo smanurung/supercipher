@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
+using System.Text.RegularExpressions;
 
 namespace SuperCipher
 {
@@ -98,10 +99,16 @@ namespace SuperCipher
             }
 
             //validate key and IV
+            Regex reg = new Regex("^[a-zA-Z0-9]*$");
             //key.length >= 8-byte
             if (keyBox.Text.Length < 8)
             {
                 MessageBox.Show("Panjang kunci kurang dari 64-bit", "Peringatan", MessageBoxButtons.OK);
+                return;
+            }
+            else if(!reg.IsMatch(keyBox.Text))
+            {
+                MessageBox.Show("Kunci hanya boleh mengandung karakter alfanumerik", "Peringatan", MessageBoxButtons.OK);
                 return;
             }
             else
@@ -110,6 +117,11 @@ namespace SuperCipher
                 if ((!radioButton2.Checked && !radioButton1.Checked) && (ivBox.Text.Length != keyBox.Text.Length))
                 {
                     MessageBox.Show("Panjang IV tidak sama dengan panjang kunci", "Peringatan", MessageBoxButtons.OK);
+                    return;
+                }
+                else if ((!radioButton2.Checked && !radioButton1.Checked) && (ivBox.Text.Contains(".")))
+                {
+                    MessageBox.Show("IV tidak boleh mengandung karakter \".\"", "Peringatan", MessageBoxButtons.OK);
                     return;
                 }
             }
