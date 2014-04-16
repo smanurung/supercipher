@@ -238,8 +238,8 @@ namespace SuperCipher
                 if (mode.Equals("CFB"))
                 {
                     //CFB mode
+                    Console.WriteLine("CFB woi");
                     CFB cfb = new CFB(null, content, keyBox.Text, iv);
-                    Console.WriteLine(iv);
                     byte[] pbytes = cfb.decrypt();
                     Console.WriteLine("hasil dekripsi: {0}", ByteArrayToString(pbytes));
                     textBox3.Text = ByteArrayToString(pbytes);
@@ -247,7 +247,9 @@ namespace SuperCipher
                     //show plaintext if using text extension
                     if (extension.Equals("txt"))
                     {
+                        Console.WriteLine("txt woii");
                         textBox3.Text += Environment.NewLine + Environment.NewLine + Encoding.ASCII.GetString(pbytes);
+                        Console.WriteLine("textbox3 {0}",textBox3.Text);
                     }
                 }
                 else
@@ -263,11 +265,10 @@ namespace SuperCipher
                     //show plaintext if using text extension
                     if (extension.Equals("txt"))
                     {
+                        Console.WriteLine("File Text woii");
                         textBox3.Text += Environment.NewLine + Environment.NewLine + Encoding.ASCII.GetString(pbytes);
                     }
                 }
-
-                textBox3.Text = Encoding.ASCII.GetString(modeResult);
             }
         }
 
