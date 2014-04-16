@@ -8,7 +8,7 @@ using System.Security.Cryptography;
 
 namespace SuperCipher
 {
-    class Dekripsi
+    public class Dekripsi
     {
         private byte[][] internalKey; //digunakan pada generateInternalKey, addRoundKey
 
@@ -91,7 +91,7 @@ namespace SuperCipher
         public byte[] transpose(byte[] b)
         {
             UInt32 length = (UInt32)b.Length;
-            UInt32 maxi = 0, maxj = 0;
+            UInt32 maxi = 0, maxj = 1;
 
             Fibonacci fib = new Fibonacci();
             fib.start();
@@ -100,14 +100,20 @@ namespace SuperCipher
             UInt32 i = 0, j = 0;
 
             //find fibonacci limit
-            while (j < length)
+            UInt32 sem = 0;
+            while ((sem = fib.next()) < length)
             {
-                maxi = j; maxj = fib.next();
+                maxi = maxj; maxj = sem;
             }
 
+            Console.WriteLine("maxi {0} maxj {1}", maxi, maxj);
+
             //from-start backward-transposition
-            fib.start(maxi,maxj);
-            j = fib.prev(); i = fib.prev();
+            i = maxi;
+            j = maxj;
+            fib.start(i, j);
+
+            i = fib.prev();
             while (i > 0)
             {
                 Byte temp = b[length - i - 1];
@@ -118,8 +124,11 @@ namespace SuperCipher
             }
 
             //from-end backward-transposition
-            fib.start(maxi,maxj);
-            j = fib.prev(); i = fib.prev();
+            i = maxi;
+            j = maxj;
+            fib.start(i, j);
+
+            i = fib.prev();
             while(i > 0)
             {
                 Byte temp = b[i];

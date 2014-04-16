@@ -24,7 +24,7 @@ namespace SuperCipher
             UInt32 temp = a;
             a = b;
             b = temp + b;
-            return a;
+            return a; //return lower value
         }
 
         public UInt32 prev()
@@ -32,7 +32,7 @@ namespace SuperCipher
             UInt32 temp = b;
             b = a;
             a = temp - a;
-            return b;
+            return b; //return greater value
         }
     }
 }

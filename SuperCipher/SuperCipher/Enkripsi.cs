@@ -97,7 +97,7 @@ namespace SuperCipher
             Fibonacci fib = new Fibonacci();
             fib.start();
 
-            //initialize value
+            //initialize value, i=1, j=2
             UInt32 i = fib.next(), j = fib.next();
 
             //from-start tranposition
@@ -112,13 +112,14 @@ namespace SuperCipher
 
             //from-end transposition
             fib.start();
+            //initialize i=1, j=2
             i = fib.next(); j = fib.next();
 
             while(j<length)
             {
-                Byte temp = b[length-i];
-                b[length-i] = b[length-j];
-                b[length-j] = temp;
+                Byte temp = b[length - i - 1];
+                b[length - i - 1] = b[length - j - 1];
+                b[length - j - 1] = temp;
 
                 i = j; j = fib.next();
             }
