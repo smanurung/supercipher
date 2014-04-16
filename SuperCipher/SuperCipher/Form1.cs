@@ -202,13 +202,10 @@ namespace SuperCipher
             {
                 filepath = header[2];
                 iv = header[1];
-                //Console.WriteLine("iv: {0}",iv[0]);
                 mode = header[4];
                 padding = Int32.Parse(header[5]);
                 content = StringToByteArray(header[0]);
-                Console.WriteLine(content[0]);
                 extension = header[3];
-                Console.WriteLine("ext:{0}",extension);
                 
                 //validate key 
                 if (content.Length % keyBox.Text.Length != 0)
@@ -238,18 +235,22 @@ namespace SuperCipher
                 if (mode.Equals("CFB"))
                 {
                     //CFB mode
-                    Console.WriteLine("CFB woi");
                     CFB cfb = new CFB(null, content, keyBox.Text, iv);
                     byte[] pbytes = cfb.decrypt();
                     Console.WriteLine("hasil dekripsi: {0}", ByteArrayToString(pbytes));
                     textBox3.Text = ByteArrayToString(pbytes);
 
-                    //show plaintext if using text extension
                     if (extension.Equals("txt"))
                     {
-                        Console.WriteLine("txt woii");
+                        //show plaintext if using text extension
                         textBox3.Text += Environment.NewLine + Environment.NewLine + Encoding.ASCII.GetString(pbytes);
                         Console.WriteLine("textbox3 {0}",textBox3.Text);
+                    }
+                    else
+                    {
+                        //savefile
+                        String path = System.IO.Directory.GetCurrentDirectory();
+                        System.IO.File.WriteAllBytes(System.IO.Directory.GetCurrentDirectory() + "/" + filepath + "." + extension,pbytes);
                     }
                 }
                 else
@@ -265,7 +266,6 @@ namespace SuperCipher
                     //show plaintext if using text extension
                     if (extension.Equals("txt"))
                     {
-                        Console.WriteLine("File Text woii");
                         textBox3.Text += Environment.NewLine + Environment.NewLine + Encoding.ASCII.GetString(pbytes);
                     }
                 }
