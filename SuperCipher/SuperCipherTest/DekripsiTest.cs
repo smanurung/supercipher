@@ -98,5 +98,34 @@ namespace SuperCipherTest
             byte[] b = System.Text.Encoding.ASCII.GetBytes("Mata Kuliah Kriptografi.");
             CollectionAssert.AreEqual(b, de.transpose(en.transpose(b)));
         }
+
+        [TestMethod]
+        public void OverallTest()
+        {
+            Enkripsi en = new Enkripsi();
+            Dekripsi de = new Dekripsi();
+        }
+
+        [TestMethod]
+        public void SubstitusiTest()
+        {
+            byte[] b = System.Text.Encoding.ASCII.GetBytes("Mata Kuliah Kriptografi.");
+            String k = "12345678";
+            CollectionAssert.AreEqual(b, Dekripsi.Substitusi(Enkripsi.Substitusi(b,k),k));
+        }
+
+        [TestMethod]
+        public void FeistelTest()
+        {
+            Enkripsi en = new Enkripsi();
+            Dekripsi de = new Dekripsi();
+
+            byte[] b = System.Text.Encoding.ASCII.GetBytes("Mata Kuliah Kriptografi.");
+            String k = "12345678";
+            en.generateAllInternalKey(k);
+            de.generateAllInternalKey(k);
+
+            CollectionAssert.AreEqual(b, de.feistelDecipher(en.feistel(b,en.internalKey),de.internalKey));
+        }
     }
 }
