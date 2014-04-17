@@ -26,7 +26,7 @@ namespace SuperCipher
             Enkripsi enkripsi = new Enkripsi();
             int leftover = plain.Length % key.Length;
             int blockTotal = plain.Length / key.Length;
-            cipher = new byte[plain.Length + key.Length - leftover];
+            cipher = new byte[plain.Length + ((key.Length - leftover) % key.Length)];
             for (int i = 0; i < blockTotal; i++)
             {
                 byte[] blockPlain = new byte [key.Length];
