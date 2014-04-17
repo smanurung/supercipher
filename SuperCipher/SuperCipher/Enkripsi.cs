@@ -10,7 +10,7 @@ namespace SuperCipher
 {
     public class Enkripsi
     {
-        private byte[][] internalKey; //digunakan pada generateInternalKey, addRoundKey
+        public byte[][] internalKey; //digunakan pada generateInternalKey, addRoundKey
 
         public void generateAllInternalKey(string key) //men-generate seluruh (10) internal key dengan pseudo random
         {
@@ -261,10 +261,10 @@ namespace SuperCipher
             {
                 result = Substitusi(result, Encoding.ASCII.GetString(key));
                 result = transpose(result);
-                result = feistel(result, internalKey);
+                //result = feistel(result, internalKey);
                 result = addRoundKey(result);
             }
-            
+
             result = Substitusi(result, Encoding.ASCII.GetString(key));
             result = transpose(result);
             result = addRoundKey(result);

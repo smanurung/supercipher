@@ -42,8 +42,8 @@ namespace SuperCipher
             for (int i = 0; i <= (pbyte.Length / blok); i++)
             {
                 //get internal key
-                //ikey = enkripsi.encrypt(Encoding.ASCII.GetBytes(key), register);
-                ikey = register;
+                ikey = enkripsi.encrypt(Encoding.ASCII.GetBytes(key), register);
+                //ikey = register;
 
                 //get block-sized plaintext
                 byte[] ci;
@@ -106,8 +106,8 @@ namespace SuperCipher
             for (int i = 0; i <= (cbyte.Length / blok); i++)
             {
                 //get internal key
-                //ikey = enkripsi.encrypt(Encoding.ASCII.GetBytes(key), register);
-                ikey = register;
+                ikey = enkripsi.encrypt(Encoding.ASCII.GetBytes(key), register);
+                //ikey = register;
 
                 byte[] ci;
                 byte[] pi;
