@@ -256,16 +256,16 @@ namespace SuperCipher
             generateAllInternalKey(Encoding.ASCII.GetString(key));
             byte[] result = blokPlain;
             result = addRoundKey(result);
-            int loop = 1;
+            int loop = 3;
             for (int i = 0; i < loop; i++)
             {
-                result = Substitusi(result, Encoding.ASCII.GetString(key));
+                //result = Substitusi(result, Encoding.ASCII.GetString(key));
                 result = transpose(result);
                 //result = feistel(result, internalKey);
                 result = addRoundKey(result);
             }
 
-            result = Substitusi(result, Encoding.ASCII.GetString(key));
+            //result = Substitusi(result, Encoding.ASCII.GetString(key));
             result = transpose(result);
             result = addRoundKey(result);
             return result;

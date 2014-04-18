@@ -271,14 +271,14 @@ namespace SuperCipher
             byte[] result = blokCipher;
             result = addRoundKey(result);
             result = transpose(result);
-            result = Substitusi(result, Encoding.ASCII.GetString(key));
-            int loop = 1;
+            //result = Substitusi(result, Encoding.ASCII.GetString(key));
+            int loop = 3;
             for (int i = 0; i < loop; i++)
             {
                 result = addRoundKey(result);
                 //result = feistelDecipher(result,internalKey);
                 result = transpose(result);
-                result = Substitusi(result, Encoding.ASCII.GetString(key));
+                //result = Substitusi(result, Encoding.ASCII.GetString(key));
             }
             result = addRoundKey(result);
             return result;
