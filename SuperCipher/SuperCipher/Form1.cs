@@ -141,9 +141,12 @@ namespace SuperCipher
             else if (radioButton2.Checked)
             {
                 //generate IV
-
+                //IV==key
                 //CBC mode
                 mode = "CBC";
+                CBC cbc = new CBC(Encoding.ASCII.GetString(plain), "", keyBox.Text, keyBox.Text);
+                ivBox.Text = keyBox.Text;
+                modeResult = cbc.encipher(plain);
             }
             else if (radioButton3.Checked)
             {
@@ -256,6 +259,23 @@ namespace SuperCipher
                 {
                     //Generate IV
                     //CBC mode
+                    CBC cbc = new CBC("", Encoding.ASCII.GetString(content), newKey, iv);
+                    byte[] pbytes = cbc.decipher(content);
+                    Console.WriteLine("hasil dekripsi: {0}", ByteArrayToString(pbytes));
+                    textBox3.Text = ByteArrayToString(pbytes);
+
+                    if (extension.Equals("txt"))
+                    {
+                        //show plaintext if using text extension
+                        textBox3.Text += Environment.NewLine + Environment.NewLine + Encoding.ASCII.GetString(pbytes);
+                        Console.WriteLine("textbox3 {0}", textBox3.Text);
+                    }
+                    else
+                    {
+                        //savefile
+                        String path = System.IO.Directory.GetCurrentDirectory();
+                        System.IO.File.WriteAllBytes(System.IO.Directory.GetCurrentDirectory() + "/" + filepath + "." + extension, pbytes);
+                    }
                 }
                 else
                 if (mode.Equals("CFB"))
