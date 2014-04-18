@@ -223,7 +223,7 @@ namespace SuperCipher
                 extension = header[3];
                 
                 //validate key 
-                if (content.Length % keyBox.Text.Length != 0)
+                if (content.Length % keyBox.Text.Length != 0 && !mode.Equals("CBC"))
                 {
                     newKey = "";
                     Random rnd = new Random(content.Length);
