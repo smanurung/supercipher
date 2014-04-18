@@ -234,8 +234,22 @@ namespace SuperCipher
                 {
                     //ECB mode
                     ECB ecb = new ECB(null, content, newKey, iv);
-                    modeResult = ecb.decrypt();
-                    Console.WriteLine();
+                    byte[] pbytes = ecb.decrypt();
+                    Console.WriteLine("hasil dekripsi: {0}", ByteArrayToString(pbytes));
+                    textBox3.Text = ByteArrayToString(pbytes);
+
+                    if (extension.Equals("txt"))
+                    {
+                        //show plaintext if using text extension
+                        textBox3.Text += Environment.NewLine + Environment.NewLine + Encoding.ASCII.GetString(pbytes);
+                        Console.WriteLine("textbox3 {0}", textBox3.Text);
+                    }
+                    else
+                    {
+                        //savefile
+                        String path = System.IO.Directory.GetCurrentDirectory();
+                        System.IO.File.WriteAllBytes(System.IO.Directory.GetCurrentDirectory() + "/" + filepath + "." + extension, pbytes);
+                    }
                 }
                 else
                 if (mode.Equals("CBC"))
@@ -275,10 +289,17 @@ namespace SuperCipher
                     Console.WriteLine("hasil dekripsi: {0}", ByteArrayToString(pbytes));
                     textBox3.Text = ByteArrayToString(pbytes);
 
-                    //show plaintext if using text extension
                     if (extension.Equals("txt"))
                     {
+                        //show plaintext if using text extension
                         textBox3.Text += Environment.NewLine + Environment.NewLine + Encoding.ASCII.GetString(pbytes);
+                        Console.WriteLine("textbox3 {0}", textBox3.Text);
+                    }
+                    else
+                    {
+                        //savefile
+                        String path = System.IO.Directory.GetCurrentDirectory();
+                        System.IO.File.WriteAllBytes(System.IO.Directory.GetCurrentDirectory() + "/" + filepath + "." + extension, pbytes);
                     }
                 }
             }

@@ -41,14 +41,14 @@ namespace SuperCipher
             for (int i = 0; i <= (pbyte.Length / blok); i++)
             {
                 //get internal key
-                //ikey = enkripsi.encrypt(Encoding.ASCII.GetBytes(key), register);
-                ikey = register;
+                ikey = enkripsi.encrypt(Encoding.ASCII.GetBytes(key), register);
+                //ikey = register;
 
                 //get block-sized plaintext
                 byte[] ci;
                 byte[] pi;
 
-                if (pbyte.Length - (i * blok) >= blok)
+                if(pbyte.Length - (i * blok) >= blok)
                 {
                     ci = new byte[blok];
                     pi = new byte[blok];
@@ -63,16 +63,16 @@ namespace SuperCipher
 
                 ikey = ikey.Skip(0).Take(pi.Length).ToArray();
                 ci = xor(pi, ikey);
-                for (int m = 0; m < ikey.Length; m++)
+                for (int m = 0; m < ci.Length; m++)
                 {
-                    cbyte[i * blok + m] = ikey[m];
+                    cbyte[i * blok + m] = ci[m];
                 }
 
                 //wrap register
-                register = cbyte;
+                register = ikey;
             }
 
-            //this.cipher = Encoding.ASCII.GetString(cbyte);
+            this.cipher = new byte[cbyte.Length];
             this.cipher = cbyte;
             return this.cipher;
         }
@@ -99,32 +99,50 @@ namespace SuperCipher
             Enkripsi enkripsi = new Enkripsi();
 
             Int32 blok = Encoding.ASCII.GetBytes(this.key).Length;
-            //byte[] cbyte = Encoding.ASCII.GetBytes(this.cipher);
             byte[] cbyte = this.cipher;
             byte[] pbyte = new byte[cbyte.Length];
 
-            for (int i = 0; i < (cbyte.Length / blok); i++)
+            for (int i = 0; i <= (cbyte.Length / blok); i++)
             {
                 //get internal key
                 ikey = enkripsi.encrypt(Encoding.ASCII.GetBytes(key), register);
 
                 //get block-sized plaintext
-                byte[] ci = new byte[blok];
-                byte[] pi = new byte[blok];
+                byte[] ci;
+                byte[] pi;
 
-                ci = cbyte.Skip(i * blok).Take(cbyte.Length - (i * blok)).ToArray();
+                //ci = cbyte.Skip(i * blok).Take(cbyte.Length - (i * blok)).ToArray();
+
+                //pi = xor(ci, ikey);
+
+                if (cbyte.Length - (i * blok) >= blok)
+                {
+                    ci = new byte[blok];
+                    pi = new byte[blok];
+                    ci = cbyte.Skip(i * blok).Take(blok).ToArray();
+                }
+                else
+                {
+                    pi = new byte[cbyte.Length - (i * blok)];
+                    ci = new byte[cbyte.Length - (i * blok)];
+                    ci = cbyte.Skip(i * blok).Take(cbyte.Length - (i * blok)).ToArray();
+                }
+
+                ikey = ikey.Skip(0).Take(ci.Length).ToArray();
 
                 pi = xor(ci, ikey);
-                for (int m = 0; m < blok; m++)
+
+                for (int m = 0; m < pi.Length; m++)
                 {
-                    pbyte[i * blok + m] = ikey[m];
+                    pbyte[i * blok + m] = pi[m];
                 }
 
                 //wrap register
-                register = cbyte;
+                register = ikey;
             }
 
             //this.plain = Encoding.ASCII.GetString(pbyte);
+            this.plain = new byte[pbyte.Length];
             this.plain = pbyte;
             return this.plain;
         }
