@@ -163,13 +163,13 @@ namespace SuperCipher
                 resL[left] = plain[left];
                 L[left] = plain[left];
             }
-            for (int right = plain.Length / 2; right < plain.Length; right++)
+            for (int right = plain.Length / 2; right < plain.Length - plain.Length % 2; right++)
             {
                 resR[right - plain.Length / 2] = plain[right];
                 R[right - plain.Length / 2] = plain[right];
             }
 
-            Console.WriteLine("Nilai awal L dan R: ");
+            /*Console.WriteLine("Nilai awal L dan R: ");
             for (int xx = 0; xx < resL.Length; xx++)
             {
                 Console.Write(resL[xx].ToString());
@@ -179,7 +179,7 @@ namespace SuperCipher
             {
                 Console.Write(resR[xx].ToString());
             }
-            Console.WriteLine("");
+            Console.WriteLine("");*/
 
             //feistel
             int j = 9;
@@ -203,7 +203,7 @@ namespace SuperCipher
                     resL[y] = R[y];
                 }
 
-                Console.WriteLine("iterasi #" + (j + 1));
+                /*Console.WriteLine("iterasi #" + (j + 1));
                 for (int xx = 0; xx < resL.Length; xx++)
                 {
                     Console.Write(resL[xx].ToString() + " ");
@@ -213,7 +213,7 @@ namespace SuperCipher
                 {
                     Console.Write(resR[xx].ToString() + " ");
                 }
-                Console.WriteLine("");
+                Console.WriteLine("");*/
 
                 j--;
             } while (j >= 1);
@@ -236,7 +236,7 @@ namespace SuperCipher
                 resL[y] = L[y];
             }
 
-            Console.WriteLine("iterasi #1");
+            /*Console.WriteLine("iterasi #1");
             for (int xx = 0; xx < resL.Length; xx++)
             {
                 Console.Write(resL[xx].ToString() + " ");
@@ -246,7 +246,7 @@ namespace SuperCipher
             {
                 Console.Write(resR[xx].ToString() + " ");
             }
-            Console.WriteLine("");
+            Console.WriteLine("");*/
 
             for (int i = 0; i < resL.Length; i++)
             {
@@ -256,12 +256,12 @@ namespace SuperCipher
             {
                 res[i + resR.Length] = resR[i];
             }
-
-            Console.Write("feistel decipher result = ");
+            if (plain.Length % 2 != 0) res[plain.Length - 1] = plain[plain.Length - 1];
+            /*Console.Write("feistel decipher result = ");
             for (int xx = 0; xx < res.Length; xx++)
             {
                 Console.Write(res[xx]);
-            }
+            }*/
             return res;
         }
 
@@ -276,7 +276,7 @@ namespace SuperCipher
             for (int i = 0; i < loop; i++)
             {
                 result = addRoundKey(result);
-                //result = feistelDecipher(result,internalKey);
+                result = feistelDecipher(result,internalKey);
                 result = transpose(result);
                 //result = Substitusi(result, Encoding.ASCII.GetString(key));
             }
